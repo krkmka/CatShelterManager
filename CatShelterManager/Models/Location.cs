@@ -1,63 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
+using CatShelterManager.Models;
 
 namespace CatShelterManager.Models
 {
-    public class Location
+    public class Location : IEntity
     {
-        //Атрибути
         public int Id { get; private set; }
         public string Number { get; private set; }
         public string Description { get; private set; }
 
-        private readonly List<Cat> _cats;
-
-        //список лише для читання (запрівачено)
+        private readonly List<Cat> _cats = new();
         public IReadOnlyList<Cat> Cats => _cats.AsReadOnly();
 
-        //Конструктор
         public Location(int id, string number, string description)
         {
             if (string.IsNullOrWhiteSpace(number))
-                throw new ArgumentException("Номер місця не може бути порожнім.", nameof(number));
-
+                throw new ArgumentException("Номер локації не може бути порожнім.", nameof(number));
             if (description == null)
-                throw new ArgumentNullException(nameof(description), "Опис не може бути пустим.");
+                throw new ArgumentNullException(nameof(description));
 
             Id = id;
             Number = number;
             Description = description;
-            _cats = new List<Cat>();
         }
 
-        //Методи (відповідно до UML)
-
-        public void Rename(string newTitle)
+        public void Rename(string newNumber)
         {
-            if (string.IsNullOrWhiteSpace(newTitle))
-                throw new ArgumentException("Новий номер не може бути порожнім.", nameof(newTitle));
-
-            Number = newTitle;
+            if (string.IsNullOrWhiteSpace(newNumber))
+                throw new ArgumentException("Номер не може бути порожнім.", nameof(newNumber));
+            Number = newNumber;
         }
 
         public void UpdateDescription(string newDescription)
         {
-            if (newDescription == null)
-                throw new ArgumentNullException(nameof(newDescription), "Опис не може бути порожнім.");
-
-            Description = newDescription;
+            Description = newDescription ?? throw new ArgumentNullException(nameof(newDescription));
         }
 
-        //Внутрішні методи для підтримки двонаправленого зв'язку
         internal void AddCat(Cat cat)
         {
-            if (!_cats.Contains(cat))
-                _cats.Add(cat);
+            if (!_cats.Contains(cat)) _cats.Add(cat);
         }
 
-        internal void RemoveCat(Cat cat)
-        {
-            _cats.Remove(cat);
-        }
+        internal void RemoveCat(Cat cat) => _cats.Remove(cat);
+
+        // Потрібно для коректного відображення у ComboBox і DataGridView
+        public override string ToString() => Number;
     }
 }

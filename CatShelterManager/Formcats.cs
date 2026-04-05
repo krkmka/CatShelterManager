@@ -1,100 +1,74 @@
-﻿using CatShelterManager.Models;
-using CatShelterManager.Repositories;
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows.Forms;
-using System.Xml.Linq;
+using CatShelterManager.Models;
+using CatShelterManager.Repositories;
 
 namespace CatShelterManager
 {
     public partial class FormCats : Form
     {
-        // -------------------------------------------------------
-        // Репозиторії приходять ззовні (з FormMain) — не створюємо
-        // нові, а працюємо з тими самими даними що й FormLocations
-        // -------------------------------------------------------
-        private readonly CatRepository _catRepo;
-        private readonly LocationRepository _locationRepo;
+        private readonly IRepository<Cat> _catRepo;
+        private readonly IRepository<Location> _locationRepo;
 
-        public FormCats(CatRepository catRepo, LocationRepository locationRepo)
+        public FormCats(IRepository<Cat> catRepo, IRepository<Location> locationRepo)
         {
             _catRepo = catRepo;
             _locationRepo = locationRepo;
 
             InitializeComponent();
-
             SetupCombos();
             RefreshGrid();
         }
 
-        // Заповнити обидва ComboBox-и при відкритті форми
         private void SetupCombos()
         {
-            // HealthStatus — всі значення enum
             cmbHealth.DataSource = Enum.GetValues(typeof(HealthStatus));
 
-            // Локації — список з репозиторію
             cmbLocation.DataSource = null;
             cmbLocation.DataSource = _locationRepo.GetAll().ToList();
-            cmbLocation.DisplayMember = "Number";
-            cmbLocation.ValueMember = "Id";
+            cmbLocation.DisplayMember = "Number"; // або просто ToString() — вже є override
             cmbLocation.SelectedIndex = -1;
         }
 
-        // -------------------------------------------------------
-        // READ — оновити таблицю
-        // -------------------------------------------------------
+        // READ — пряме прив'язування об'єктів до grid.
+        // ToString() у Location забезпечує коректний вивід колонки CurrentLocation.
         private void RefreshGrid()
         {
-            dgvCats.DataSource = _catRepo.GetAll()
-                .Select(c => new
-                {
-                    c.Id,
-                    Кличка = c.Nickname,
-                    Вік = c.Age,
-                    Здоров_я = c.HealthStatus switch
-                    {
-                        HealthStatus.Healthy => "Здоровий",
-                        HealthStatus.NeedsCheckup => "Потребує огляду",
-                        HealthStatus.InTreatment => "На лікуванні",
-                        _ => c.HealthStatus.ToString()
-                    },
-                    Локація = c.CurrentLocation.Number
-                })
-                .ToList();
+            dgvCats.DataSource = _catRepo.GetAll().ToList();
+
+            if (!dgvCats.Columns.Contains("Nickname")) return;
+
+            dgvCats.Columns["Nickname"].HeaderText = "Кличка";
+            dgvCats.Columns["Age"].HeaderText = "Вік";
+            dgvCats.Columns["HealthStatus"].HeaderText = "Здоров'я";
+            dgvCats.Columns["CurrentLocation"].HeaderText = "Локація";
 
             if (dgvCats.Columns.Contains("Id"))
                 dgvCats.Columns["Id"].Visible = false;
         }
 
-        // -------------------------------------------------------
         // CREATE
-        // -------------------------------------------------------
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            // <<Include>> з Use Case: локація обов'язкова
             if (cmbLocation.SelectedItem == null)
             {
-                MessageBox.Show(
-                    "Оберіть місце утримання.\n" +
-                    "Кіт повинен бути прив'язаний до локації.",
-                    "Обов'язкове поле",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Оберіть місце утримання — це обов'язкова умова.",
+                    "Обов'язкове поле", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-                var location = (Location)cmbLocation.SelectedItem;
                 int newId = _catRepo.GetAll().Count > 0
                     ? _catRepo.GetAll().Max(c => c.Id) + 1 : 1;
 
                 var cat = new Cat(
-                    id: newId,
-                    nickname: txtName.Text,
-                    age: (int)numAge.Value,
-                    status: (HealthStatus)cmbHealth.SelectedItem!,
-                    location: location
+                    newId,
+                    txtName.Text,
+                    (int)numAge.Value,
+                    (HealthStatus)cmbHealth.SelectedItem!,
+                    (Location)cmbLocation.SelectedItem
                 );
 
                 _catRepo.Add(cat);
@@ -108,31 +82,29 @@ namespace CatShelterManager
             }
         }
 
-        // -------------------------------------------------------
-        // UPDATE
-        // -------------------------------------------------------
+        // UPDATE — змінюємо об'єкт через методи моделі, потім повідомляємо репозиторій
         private void btnEdit_Click(object sender, EventArgs e)
         {
             if (dgvCats.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Оберіть кота для редагування.", "Підказка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Оберіть кота для редагування.",
+                    "Підказка", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
             if (cmbLocation.SelectedItem == null)
             {
-                MessageBox.Show("Оберіть місце утримання.", "Обов'язкове поле",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Оберіть місце утримання.",
+                    "Обов'язкове поле", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var cat = GetSelectedCat();
+            // Отримуємо кота напряму з рядка grid — не потрібен GetById
+            var cat = dgvCats.SelectedRows[0].DataBoundItem as Cat;
             if (cat == null) return;
 
             try
             {
-                // private set — тільки через методи моделі
                 cat.UpdateCatDetails(
                     txtName.Text,
                     (int)numAge.Value,
@@ -141,7 +113,11 @@ namespace CatShelterManager
 
                 var newLoc = (Location)cmbLocation.SelectedItem;
                 if (cat.CurrentLocation.Id != newLoc.Id)
-                    cat.AssignLocation(newLoc); // двонаправлений зв'язок
+                    cat.AssignLocation(newLoc);
+
+                // Повідомляємо репозиторій про зміну —
+                // важливо для майбутнього JsonRepository
+                _catRepo.Update(cat);
 
                 RefreshGrid();
                 ClearFields();
@@ -153,19 +129,17 @@ namespace CatShelterManager
             }
         }
 
-        // -------------------------------------------------------
         // DELETE
-        // -------------------------------------------------------
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (dgvCats.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Оберіть кота для видалення.", "Підказка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Оберіть кота для видалення.",
+                    "Підказка", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var cat = GetSelectedCat();
+            var cat = dgvCats.SelectedRows[0].DataBoundItem as Cat;
             if (cat == null) return;
 
             var confirm = MessageBox.Show(
@@ -174,7 +148,6 @@ namespace CatShelterManager
 
             if (confirm == DialogResult.Yes)
             {
-                // Відв'язати від локації перед видаленням
                 cat.CurrentLocation.RemoveCat(cat);
                 _catRepo.Remove(cat.Id);
 
@@ -183,37 +156,16 @@ namespace CatShelterManager
             }
         }
 
-        // -------------------------------------------------------
-        // SEARCH — <<Extends>> з Use Case
-        // -------------------------------------------------------
+        // SEARCH через Find — предикат можна розширювати
         private void btnSearch_Click(object sender, EventArgs e)
         {
             string query = txtSearch.Text.Trim().ToLower();
 
-            if (string.IsNullOrEmpty(query))
-            {
-                RefreshGrid();
-                return;
-            }
+            if (string.IsNullOrEmpty(query)) { RefreshGrid(); return; }
 
-            dgvCats.DataSource = _catRepo.GetAll()
-                .Where(c => c.Nickname.ToLower().Contains(query)
-                         || c.CurrentLocation.Number.ToLower().Contains(query))
-                .Select(c => new
-                {
-                    c.Id,
-                    Кличка = c.Nickname,
-                    Вік = c.Age,
-                    Здоров_я = c.HealthStatus switch
-                    {
-                        HealthStatus.Healthy => "Здоровий",
-                        HealthStatus.NeedsCheckup => "Потребує огляду",
-                        HealthStatus.InTreatment => "На лікуванні",
-                        _ => c.HealthStatus.ToString()
-                    },
-                    Локація = c.CurrentLocation.Number
-                })
-                .ToList();
+            dgvCats.DataSource = _catRepo
+                .Find(c => c.Nickname.ToLower().Contains(query)
+                        || c.CurrentLocation.Number.ToLower().Contains(query));
 
             if (dgvCats.Columns.Contains("Id"))
                 dgvCats.Columns["Id"].Visible = false;
@@ -225,28 +177,19 @@ namespace CatShelterManager
             RefreshGrid();
         }
 
-        // -------------------------------------------------------
-        // ВИБІР РЯДКА — заповнити поля для редагування
-        // -------------------------------------------------------
+        // Вибір рядка — DataBoundItem дає об'єкт напряму, GetById більше не потрібен
         private void dgvCats_SelectionChanged(object sender, EventArgs e)
         {
-            var cat = GetSelectedCat();
+            var cat = dgvCats.SelectedRows.Count > 0
+                ? dgvCats.SelectedRows[0].DataBoundItem as Cat
+                : null;
+
             if (cat == null) return;
 
             txtName.Text = cat.Nickname;
             numAge.Value = cat.Age;
             cmbHealth.SelectedItem = cat.HealthStatus;
             cmbLocation.SelectedItem = _locationRepo.GetById(cat.CurrentLocation.Id);
-        }
-
-        // -------------------------------------------------------
-        // ДОПОМІЖНІ
-        // -------------------------------------------------------
-        private Cat? GetSelectedCat()
-        {
-            if (dgvCats.SelectedRows.Count == 0) return null;
-            int id = (int)dgvCats.SelectedRows[0].Cells["Id"].Value;
-            return _catRepo.GetById(id);
         }
 
         private void ClearFields()

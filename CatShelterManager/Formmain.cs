@@ -1,18 +1,17 @@
-﻿using CatShelterManager.Models;
+﻿using System.Windows.Forms;
+using CatShelterManager.Models;
 using CatShelterManager.Repositories;
-using System.Windows.Forms;
-using static System.Windows.Forms.DataFormats;
 
 namespace CatShelterManager
 {
     public partial class FormMain : Form
     {
-        // -------------------------------------------------------
-        // Репозиторії створюються ТІЛЬКИ тут — один раз для всього
-        // застосунку. Дочірні форми отримують їх через конструктор.
-        // -------------------------------------------------------
-        private readonly CatRepository _catRepo = new();
-        private readonly LocationRepository _locationRepo = new();
+        // Один репозиторій на тип — створюються тут один раз,
+        // передаються у дочірні форми щоб всі працювали з тими самими даними.
+        // Коли з'явиться JsonRepository<T> — просто замінити new Repository<T>()
+        // на new JsonRepository<T>("path") — інтерфейс не зміниться.
+        private readonly IRepository<Cat> _catRepo = new Repository<Cat>();
+        private readonly IRepository<Location> _locationRepo = new Repository<Location>();
 
         public FormMain()
         {
@@ -20,7 +19,6 @@ namespace CatShelterManager
             SeedData();
         }
 
-        // Тестові дані щоб форма не була порожньою при запуску
         private void SeedData()
         {
             var loc1 = new Location(1, "A-01", "Приймальня");
@@ -35,19 +33,14 @@ namespace CatShelterManager
             _catRepo.Add(new Cat(3, "Тигр", 5, HealthStatus.InTreatment, loc1));
         }
 
-        // Відкрити форму керування котами
         private void btnCats_Click(object sender, EventArgs e)
         {
-            // Передаємо обидва репозиторії — коти залежать від локацій
-            var form = new FormCats(_catRepo, _locationRepo);
-            form.ShowDialog(); // ShowDialog = блокує FormMain поки відкрита дочірня
+            new FormCats(_catRepo, _locationRepo).ShowDialog();
         }
 
-        // Відкрити форму керування локаціями
         private void btnLocations_Click(object sender, EventArgs e)
         {
-            var form = new FormLocations(_locationRepo, _catRepo);
-            form.ShowDialog();
+            new FormLocations(_locationRepo, _catRepo).ShowDialog();
         }
     }
 }

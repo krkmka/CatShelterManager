@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CatShelterManager.Repositories
 {
@@ -6,7 +7,9 @@ namespace CatShelterManager.Repositories
     {
         void Add(T item);
         void Remove(int id);
+        void Update(T item);
         T? GetById(int id);
         IReadOnlyList<T> GetAll();
+        List<T> Find(Func<T, bool> predicate);
     }
 }
