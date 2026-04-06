@@ -92,6 +92,7 @@
             grpSearch.Controls.AddRange(new System.Windows.Forms.Control[]
                 { txtSearch, btnSearch, btnClearSearch });
 
+
             // Поля редагування
             grpFields = new System.Windows.Forms.GroupBox
             {
@@ -192,6 +193,7 @@
                 Font = new System.Drawing.Font("Segoe UI", 10f)
             };
             btnEdit.FlatAppearance.BorderSize = 0;
+
 
             btnDelete = new System.Windows.Forms.Button
             {
