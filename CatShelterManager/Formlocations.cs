@@ -22,18 +22,19 @@ namespace CatShelterManager
 
         private void RefreshGrid()
         {
-            dgvLocations.DataSource = _locationRepo.GetAll()
-                .Select(l => new
-                {
-                    l.Id,
-                    Номер = l.Number,
-                    Опис = l.Description,
-                    Котів = _catRepo.Find(c => c.LocationId == l.Id).Count
-                })
-                .ToList();
+            dgvLocations.DataSource = _locationRepo.GetAll().ToList();
+        }
 
-            if (dgvLocations.Columns.Contains("Id"))
-                dgvLocations.Columns["Id"].Visible = false;
+        // Колонка "Котів" не має DataPropertyName — заповнюємо тут
+        private void dgvLocations_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dgvLocations.Columns[e.ColumnIndex].Name != "Cats") return;
+
+            var location = dgvLocations.Rows[e.RowIndex].DataBoundItem as Location;
+            if (location == null) return;
+
+            e.Value = _catRepo.Find(c => c.LocationId == location.Id).Count;
+            e.FormattingApplied = true;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -47,7 +48,9 @@ namespace CatShelterManager
 
             try
             {
-                _locationRepo.Add(new Location(0, txtNumber.Text, txtDesc.Text));
+                int newId = _locationRepo.GetAll().Any()
+                    ? _locationRepo.GetAll().Max(l => l.Id) + 1 : 1;
+                _locationRepo.Add(new Location(newId, txtNumber.Text, txtDesc.Text));
                 RefreshGrid();
                 ClearFields();
             }
@@ -62,8 +65,7 @@ namespace CatShelterManager
         {
             if (dgvLocations.SelectedRows.Count == 0) return;
 
-            int id = (int)dgvLocations.SelectedRows[0].Cells["Id"].Value;
-            var location = _locationRepo.GetById(id);
+            var location = dgvLocations.SelectedRows[0].DataBoundItem as Location;
             if (location == null) return;
 
             try
@@ -85,11 +87,10 @@ namespace CatShelterManager
         {
             if (dgvLocations.SelectedRows.Count == 0) return;
 
-            int id = (int)dgvLocations.SelectedRows[0].Cells["Id"].Value;
-            var location = _locationRepo.GetById(id);
+            var location = dgvLocations.SelectedRows[0].DataBoundItem as Location;
             if (location == null) return;
 
-            if (_catRepo.Find(c => c.LocationId == id).Any())
+            if (_catRepo.Find(c => c.LocationId == location.Id).Any())
             {
                 MessageBox.Show(
                     $"Не можна видалити '{location.Number}': є прив'язані коти.\n" +
@@ -102,7 +103,7 @@ namespace CatShelterManager
             if (MessageBox.Show($"Видалити локацію '{location.Number}'?", "Підтвердження",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                _locationRepo.Remove(id);
+                _locationRepo.Remove(location.Id);
                 RefreshGrid();
                 ClearFields();
             }
@@ -116,17 +117,7 @@ namespace CatShelterManager
             dgvLocations.DataSource = _locationRepo
                 .Find(l => l.Number.ToLower().Contains(query)
                         || l.Description.ToLower().Contains(query))
-                .Select(l => new
-                {
-                    l.Id,
-                    Номер = l.Number,
-                    Опис = l.Description,
-                    Котів = _catRepo.Find(c => c.LocationId == l.Id).Count
-                })
                 .ToList();
-
-            if (dgvLocations.Columns.Contains("Id"))
-                dgvLocations.Columns["Id"].Visible = false;
         }
 
         private void btnClearSearch_Click(object sender, EventArgs e)
@@ -137,10 +128,10 @@ namespace CatShelterManager
 
         private void dgvLocations_SelectionChanged(object sender, EventArgs e)
         {
-            if (dgvLocations.SelectedRows.Count == 0) return;
+            var location = dgvLocations.SelectedRows.Count > 0
+                ? dgvLocations.SelectedRows[0].DataBoundItem as Location
+                : null;
 
-            int id = (int)dgvLocations.SelectedRows[0].Cells["Id"].Value;
-            var location = _locationRepo.GetById(id);
             if (location == null) return;
 
             txtNumber.Text = location.Number;
@@ -152,6 +143,11 @@ namespace CatShelterManager
             txtNumber.Text = string.Empty;
             txtDesc.Text = string.Empty;
             dgvLocations.ClearSelection();
+        }
+
+        private void dgvLocations_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

@@ -27,157 +27,194 @@
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-
-            this.Text = "Керування локаціями";
-            this.Size = new System.Drawing.Size(900, 480);
-            this.MinimumSize = new System.Drawing.Size(900, 480);
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Font = new System.Drawing.Font("Segoe UI", 9.5f);
-            this.BackColor = System.Drawing.Color.White;
-
-            // DataGridView
-            dgvLocations = new System.Windows.Forms.DataGridView
-            {
-                Location = new System.Drawing.Point(12, 12),
-                Size = new System.Drawing.Size(860, 250),
-                ReadOnly = true,
-                SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect,
-                MultiSelect = false,
-                AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill,
-                AllowUserToAddRows = false,
-                AllowUserToDeleteRows = false,
-                RowHeadersVisible = false,
-                BackgroundColor = System.Drawing.Color.White,
-                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle,
-                AlternatingRowsDefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle
-                {
-                    BackColor = System.Drawing.Color.FromArgb(250, 245, 255)
-                }
-            };
+            dgvLocations = new DataGridView();
+            grpSearch = new GroupBox();
+            txtSearch = new TextBox();
+            btnSearch = new Button();
+            btnClearSearch = new Button();
+            grpFields = new GroupBox();
+            lblNumber = new Label();
+            txtNumber = new TextBox();
+            lblDesc = new Label();
+            txtDesc = new TextBox();
+            pnlButtons = new Panel();
+            btnAdd = new Button();
+            btnEdit = new Button();
+            btnDelete = new Button();
+            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn3 = new DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)dgvLocations).BeginInit();
+            grpSearch.SuspendLayout();
+            grpFields.SuspendLayout();
+            pnlButtons.SuspendLayout();
+            SuspendLayout();
+            // 
+            // dgvLocations
+            // 
+            dgvLocations.ColumnHeadersHeight = 29;
+            dgvLocations.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, dataGridViewTextBoxColumn3 });
+            dgvLocations.Location = new Point(0, 0);
+            dgvLocations.Name = "dgvLocations";
+            dgvLocations.RowHeadersWidth = 51;
+            dgvLocations.Size = new Size(240, 150);
+            dgvLocations.TabIndex = 0;
+            dgvLocations.CellContentClick += dgvLocations_CellContentClick;
+            dgvLocations.CellFormatting += dgvLocations_CellFormatting;
             dgvLocations.SelectionChanged += dgvLocations_SelectionChanged;
-
-            // Пошук
-            grpSearch = new System.Windows.Forms.GroupBox
-            {
-                Text = "Пошук",
-                Location = new System.Drawing.Point(12, 272),
-                Size = new System.Drawing.Size(860, 52)
-            };
-            txtSearch = new System.Windows.Forms.TextBox
-            {
-                Location = new System.Drawing.Point(10, 18),
-                Size = new System.Drawing.Size(630, 24),
-                PlaceholderText = "Номер або опис локації..."
-            };
-            btnSearch = new System.Windows.Forms.Button
-            {
-                Text = "Знайти",
-                Location = new System.Drawing.Point(648, 16),
-                Size = new System.Drawing.Size(90, 28)
-            };
-            btnClearSearch = new System.Windows.Forms.Button
-            {
-                Text = "Скинути",
-                Location = new System.Drawing.Point(746, 16),
-                Size = new System.Drawing.Size(100, 28)
-            };
+            // 
+            // grpSearch
+            // 
+            grpSearch.Controls.Add(txtSearch);
+            grpSearch.Controls.Add(btnSearch);
+            grpSearch.Controls.Add(btnClearSearch);
+            grpSearch.Location = new Point(0, 0);
+            grpSearch.Name = "grpSearch";
+            grpSearch.Size = new Size(200, 100);
+            grpSearch.TabIndex = 1;
+            grpSearch.TabStop = false;
+            // 
+            // txtSearch
+            // 
+            txtSearch.Location = new Point(0, 0);
+            txtSearch.Name = "txtSearch";
+            txtSearch.Size = new Size(100, 29);
+            txtSearch.TabIndex = 0;
+            // 
+            // btnSearch
+            // 
+            btnSearch.Location = new Point(0, 0);
+            btnSearch.Name = "btnSearch";
+            btnSearch.Size = new Size(75, 23);
+            btnSearch.TabIndex = 1;
             btnSearch.Click += btnSearch_Click;
+            // 
+            // btnClearSearch
+            // 
+            btnClearSearch.Location = new Point(0, 0);
+            btnClearSearch.Name = "btnClearSearch";
+            btnClearSearch.Size = new Size(75, 23);
+            btnClearSearch.TabIndex = 2;
             btnClearSearch.Click += btnClearSearch_Click;
-            grpSearch.Controls.AddRange(new System.Windows.Forms.Control[]
-                { txtSearch, btnSearch, btnClearSearch });
-
-            // Поля редагування
-            grpFields = new System.Windows.Forms.GroupBox
-            {
-                Text = "Дані локації",
-                Location = new System.Drawing.Point(12, 334),
-                Size = new System.Drawing.Size(860, 60)
-            };
-
-            lblNumber = new System.Windows.Forms.Label
-            {
-                Text = "Номер/Назва:",
-                Location = new System.Drawing.Point(10, 24),
-                Size = new System.Drawing.Size(90, 22),
-                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-            };
-            txtNumber = new System.Windows.Forms.TextBox
-            {
-                Location = new System.Drawing.Point(104, 22),
-                Size = new System.Drawing.Size(180, 24)
-            };
-
-            lblDesc = new System.Windows.Forms.Label
-            {
-                Text = "Опис:",
-                Location = new System.Drawing.Point(296, 24),
-                Size = new System.Drawing.Size(44, 22),
-                TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-            };
-            txtDesc = new System.Windows.Forms.TextBox
-            {
-                Location = new System.Drawing.Point(344, 22),
-                Size = new System.Drawing.Size(500, 24)
-            };
-
-            grpFields.Controls.AddRange(new System.Windows.Forms.Control[]
-                { lblNumber, txtNumber, lblDesc, txtDesc });
-
-            // Кнопки
-            pnlButtons = new System.Windows.Forms.Panel
-            {
-                Location = new System.Drawing.Point(12, 406),
-                Size = new System.Drawing.Size(860, 44)
-            };
-
-            btnAdd = new System.Windows.Forms.Button
-            {
-                Text = "Додати",
-                Location = new System.Drawing.Point(0, 6),
-                Size = new System.Drawing.Size(120, 34),
-                BackColor = System.Drawing.Color.FromArgb(76, 175, 80),
-                ForeColor = System.Drawing.Color.White,
-                FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                Font = new System.Drawing.Font("Segoe UI", 10f)
-            };
+            // 
+            // grpFields
+            // 
+            grpFields.Controls.Add(lblNumber);
+            grpFields.Controls.Add(txtNumber);
+            grpFields.Controls.Add(lblDesc);
+            grpFields.Controls.Add(txtDesc);
+            grpFields.Location = new Point(0, 0);
+            grpFields.Name = "grpFields";
+            grpFields.Size = new Size(200, 100);
+            grpFields.TabIndex = 2;
+            grpFields.TabStop = false;
+            // 
+            // lblNumber
+            // 
+            lblNumber.Location = new Point(0, 0);
+            lblNumber.Name = "lblNumber";
+            lblNumber.Size = new Size(100, 23);
+            lblNumber.TabIndex = 0;
+            // 
+            // txtNumber
+            // 
+            txtNumber.Location = new Point(0, 0);
+            txtNumber.Name = "txtNumber";
+            txtNumber.Size = new Size(100, 29);
+            txtNumber.TabIndex = 1;
+            // 
+            // lblDesc
+            // 
+            lblDesc.Location = new Point(0, 0);
+            lblDesc.Name = "lblDesc";
+            lblDesc.Size = new Size(100, 23);
+            lblDesc.TabIndex = 2;
+            // 
+            // txtDesc
+            // 
+            txtDesc.Location = new Point(0, 0);
+            txtDesc.Name = "txtDesc";
+            txtDesc.Size = new Size(100, 29);
+            txtDesc.TabIndex = 3;
+            // 
+            // pnlButtons
+            // 
+            pnlButtons.Controls.Add(btnAdd);
+            pnlButtons.Controls.Add(btnEdit);
+            pnlButtons.Controls.Add(btnDelete);
+            pnlButtons.Location = new Point(0, 0);
+            pnlButtons.Name = "pnlButtons";
+            pnlButtons.Size = new Size(200, 100);
+            pnlButtons.TabIndex = 3;
+            // 
+            // btnAdd
+            // 
             btnAdd.FlatAppearance.BorderSize = 0;
-
-            btnEdit = new System.Windows.Forms.Button
-            {
-                Text = "Редагувати",
-                Location = new System.Drawing.Point(128, 6),
-                Size = new System.Drawing.Size(120, 34),
-                BackColor = System.Drawing.Color.FromArgb(156, 39, 176),
-                ForeColor = System.Drawing.Color.White,
-                FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                Font = new System.Drawing.Font("Segoe UI", 10f)
-            };
-            btnEdit.FlatAppearance.BorderSize = 0;
-
-            btnDelete = new System.Windows.Forms.Button
-            {
-                Text = "Видалити",
-                Location = new System.Drawing.Point(256, 6),
-                Size = new System.Drawing.Size(120, 34),
-                BackColor = System.Drawing.Color.FromArgb(244, 67, 54),
-                ForeColor = System.Drawing.Color.White,
-                FlatStyle = System.Windows.Forms.FlatStyle.Flat,
-                Font = new System.Drawing.Font("Segoe UI", 10f)
-            };
-            btnDelete.FlatAppearance.BorderSize = 0;
-
+            btnAdd.Location = new Point(0, 0);
+            btnAdd.Name = "btnAdd";
+            btnAdd.Size = new Size(75, 23);
+            btnAdd.TabIndex = 0;
             btnAdd.Click += btnAdd_Click;
+            // 
+            // btnEdit
+            // 
+            btnEdit.FlatAppearance.BorderSize = 0;
+            btnEdit.Location = new Point(0, 0);
+            btnEdit.Name = "btnEdit";
+            btnEdit.Size = new Size(75, 23);
+            btnEdit.TabIndex = 1;
             btnEdit.Click += btnEdit_Click;
+            // 
+            // btnDelete
+            // 
+            btnDelete.FlatAppearance.BorderSize = 0;
+            btnDelete.Location = new Point(0, 0);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(75, 23);
+            btnDelete.TabIndex = 2;
             btnDelete.Click += btnDelete_Click;
-
-            pnlButtons.Controls.AddRange(new System.Windows.Forms.Control[]
-                { btnAdd, btnEdit, btnDelete });
-
-            this.Controls.AddRange(new System.Windows.Forms.Control[]
-                { dgvLocations, grpSearch, grpFields, pnlButtons });
-
-            this.ResumeLayout(false);
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            dataGridViewTextBoxColumn1.MinimumWidth = 6;
+            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            dataGridViewTextBoxColumn1.Width = 125;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            dataGridViewTextBoxColumn2.MinimumWidth = 6;
+            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            dataGridViewTextBoxColumn2.Width = 125;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            dataGridViewTextBoxColumn3.MinimumWidth = 6;
+            dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            dataGridViewTextBoxColumn3.Width = 125;
+            // 
+            // FormLocations
+            // 
+            BackColor = Color.White;
+            ClientSize = new Size(882, 433);
+            Controls.Add(dgvLocations);
+            Controls.Add(grpSearch);
+            Controls.Add(grpFields);
+            Controls.Add(pnlButtons);
+            Font = new Font("Segoe UI", 9.5F);
+            MinimumSize = new Size(900, 480);
+            Name = "FormLocations";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Керування локаціями";
+            ((System.ComponentModel.ISupportInitialize)dgvLocations).EndInit();
+            grpSearch.ResumeLayout(false);
+            grpSearch.PerformLayout();
+            grpFields.ResumeLayout(false);
+            grpFields.PerformLayout();
+            pnlButtons.ResumeLayout(false);
+            ResumeLayout(false);
         }
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
     }
 }

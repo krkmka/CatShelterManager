@@ -33,19 +33,49 @@ namespace CatShelterManager
 
         private void RefreshGrid()
         {
-            dgvCats.DataSource = _catRepo.GetAll()
-                .Select(c => new
-                {
-                    c.Id,
-                    Кличка = c.Nickname,
-                    Вік = c.Age,
-                    Здоров_я = c.HealthStatus,
-                    Локація = _locationRepo.GetById(c.LocationId)?.Number ?? "—"
-                })
-                .ToList();
+            dgvCats.DataSource = _catRepo.GetAll().ToList();
 
-            if (dgvCats.Columns.Contains("Id"))
-                dgvCats.Columns["Id"].Visible = false;
+            if (!dgvCats.Columns.Contains("Nickname")) return;
+
+            // Приховати всі зайві колонки що генеруються з Cat
+            foreach (DataGridViewColumn col in dgvCats.Columns)
+                col.Visible = false;
+
+            // Показати тільки потрібні
+            dgvCats.Columns["Nickname"].Visible = true;
+            dgvCats.Columns["Age"].Visible = true;
+            dgvCats.Columns["HealthStatus"].Visible = true;
+            dgvCats.Columns["LocationId"].Visible = true;
+
+            dgvCats.Columns["Nickname"].HeaderText = "Кличка";
+            dgvCats.Columns["Age"].HeaderText = "Вік";
+            dgvCats.Columns["HealthStatus"].HeaderText = "Здоров'я";
+            dgvCats.Columns["LocationId"].HeaderText = "Локація";
+        }
+
+        private void dgvCats_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dgvCats.Columns[e.ColumnIndex].Name == "LocationId" && e.Value is int locId)
+            {
+                var location = _locationRepo.GetById(locId);
+                if (location != null)
+                {
+                    e.Value = location.Number;
+                    e.FormattingApplied = true;
+                }
+            }
+
+            if (dgvCats.Columns[e.ColumnIndex].Name == "HealthStatus" && e.Value is HealthStatus status)
+            {
+                e.Value = status switch
+                {
+                    HealthStatus.Healthy => "Здоровий",
+                    HealthStatus.NeedsCheckup => "Потребує огляду",
+                    HealthStatus.InTreatment => "На лікуванні",
+                    _ => status.ToString()
+                };
+                e.FormattingApplied = true;
+            }
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -71,6 +101,7 @@ namespace CatShelterManager
             }
         }
 
+
         private void btnEdit_Click(object sender, EventArgs e)
         {
             if (dgvCats.SelectedRows.Count == 0) return;
@@ -81,8 +112,7 @@ namespace CatShelterManager
                 return;
             }
 
-            int id = (int)dgvCats.SelectedRows[0].Cells["Id"].Value;
-            var cat = _catRepo.GetById(id);
+            var cat = dgvCats.SelectedRows[0].DataBoundItem as Cat;
             if (cat == null) return;
 
             try
@@ -105,14 +135,13 @@ namespace CatShelterManager
         {
             if (dgvCats.SelectedRows.Count == 0) return;
 
-            int id = (int)dgvCats.SelectedRows[0].Cells["Id"].Value;
-            var cat = _catRepo.GetById(id);
+            var cat = dgvCats.SelectedRows[0].DataBoundItem as Cat;
             if (cat == null) return;
 
             if (MessageBox.Show($"Видалити кота '{cat.Nickname}'?", "Підтвердження",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                _catRepo.Remove(id);
+                _catRepo.Remove(cat.Id);
                 RefreshGrid();
                 ClearFields();
             }
@@ -147,18 +176,18 @@ namespace CatShelterManager
         }
 
         private void dgvCats_SelectionChanged(object sender, EventArgs e)
-        {
-            if (dgvCats.SelectedRows.Count == 0) return;
+{
+    var cat = dgvCats.SelectedRows.Count > 0
+        ? dgvCats.SelectedRows[0].DataBoundItem as Cat
+        : null;
 
-            int id = (int)dgvCats.SelectedRows[0].Cells["Id"].Value;
-            var cat = _catRepo.GetById(id);
-            if (cat == null) return;
+    if (cat == null) return;
 
-            txtName.Text = cat.Nickname;
-            numAge.Value = cat.Age;
-            cmbHealth.SelectedItem = cat.HealthStatus;
-            cmbLocation.SelectedItem = _locationRepo.GetById(cat.LocationId);
-        }
+    txtName.Text             = cat.Nickname;
+    numAge.Value             = cat.Age;
+    cmbHealth.SelectedItem   = cat.HealthStatus;
+    cmbLocation.SelectedItem = _locationRepo.GetById(cat.LocationId);
+}
 
         private void ClearFields()
         {
