@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace CatShelterManager.Models
@@ -6,7 +7,9 @@ namespace CatShelterManager.Models
     public class Location : IEntity
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Номер локації обов'язковий.")]
         public string Number { get; private set; }
+        [StringLength(200, ErrorMessage = "Опис не може перевищувати 200 символів.")]
         public string Description { get; private set; }
 
         [JsonConstructor]

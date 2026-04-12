@@ -60,19 +60,21 @@ namespace CatShelterManager
                 return;
             }
 
-            try
+            int newId = _locationRepo.GetAll().Any()
+        ? _locationRepo.GetAll().Max(l => l.Id) + 1 : 1;
+
+            var newLocation = new Location(newId, txtNumber.Text, txtDesc.Text);
+
+            if (!ValidationHelper.TryValidate(newLocation, out string errorMessage))
             {
-                int newId = _locationRepo.GetAll().Any()
-                    ? _locationRepo.GetAll().Max(l => l.Id) + 1 : 1;
-                _locationRepo.Add(new Location(newId, txtNumber.Text, txtDesc.Text));
-                RefreshGrid();
-                ClearFields();
-            }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show(ex.Message, "Невірні дані",
+                MessageBox.Show(errorMessage, "Помилка введення даних",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; 
             }
+
+            _locationRepo.Add(newLocation);
+            RefreshGrid();
+            ClearFields();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -82,21 +84,21 @@ namespace CatShelterManager
             var location = dgvLocations.SelectedRows[0].DataBoundItem as Location;
             if (location == null) return;
 
-            try
-            {
-                location.Rename(txtNumber.Text);
-                location.UpdateDescription(txtDesc.Text);
-                _locationRepo.Update(location);
-                RefreshGrid();
-                ClearFields();
+            location.Rename(txtNumber.Text);
+            location.UpdateDescription(txtDesc.Text);
 
-                btnSave.Enabled = false;
-            }
-            catch (ArgumentException ex)
+            if (!ValidationHelper.TryValidate(location, out string errorMessage))
             {
-                MessageBox.Show(ex.Message, "Невірні дані",
+                MessageBox.Show(errorMessage, "Помилка валідації",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RefreshGrid();
+                return;
             }
+
+            _locationRepo.Update(location);
+            RefreshGrid();
+            ClearFields();
+            btnSave.Enabled = false;
         }
 
         private void btnDelete_Click(object sender, EventArgs e)

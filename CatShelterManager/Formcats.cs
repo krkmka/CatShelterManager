@@ -90,24 +90,28 @@ namespace CatShelterManager
                 return;
             }
 
-            try
+            var cat = new Cat(0, txtName.Text, (int)numAge.Value,
+            (HealthStatus)cmbHealth.SelectedItem!, location);
+
+            // 2. ВИКОРИСТОВУЄМО ТВІЙ HELPER
+            if (!ValidationHelper.TryValidate(cat, out string errorMessage))
             {
-                _catRepo.Add(new Cat(0, txtName.Text, (int)numAge.Value,
-                    (HealthStatus)cmbHealth.SelectedItem!, location));
-                RefreshGrid();
-                ClearFields();
+                // Якщо валідація не пройдена, показуємо всі помилки і зупиняємо метод
+                MessageBox.Show(errorMessage, "Помилка введення даних", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            catch (ArgumentException ex)
-            {
-                MessageBox.Show(ex.Message, "Невірні дані",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+
+            // 3. Якщо все добре — зберігаємо
+            _catRepo.Add(cat);
+            RefreshGrid();
+            ClearFields();
         }
 
 
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (dgvCats.SelectedRows.Count == 0) return;
+
             if (cmbLocation.SelectedItem is not Location newLoc)
             {
                 MessageBox.Show("Оберіть місце утримання.", "Обов'язкове поле",
@@ -118,22 +122,21 @@ namespace CatShelterManager
             var cat = dgvCats.SelectedRows[0].DataBoundItem as Cat;
             if (cat == null) return;
 
-            try
-            {
-                cat.UpdateCatDetails(txtName.Text, (int)numAge.Value,
-                    (HealthStatus)cmbHealth.SelectedItem!);
-                cat.UpdateLocation(newLoc.Id);
-                _catRepo.Update(cat);
-                RefreshGrid();
-                ClearFields();
+            cat.UpdateCatDetails(txtName.Text, (int)numAge.Value, (HealthStatus)cmbHealth.SelectedItem!);
+            cat.UpdateLocation(newLoc.Id);
 
-                btnSave.Enabled = false; 
-            }
-            catch (ArgumentException ex)
+            if (!ValidationHelper.TryValidate(cat, out string errorMessage))
             {
-                MessageBox.Show(ex.Message, "Невірні дані",
+                MessageBox.Show(errorMessage, "Помилка валідації",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                RefreshGrid();
+                return;
             }
+
+            _catRepo.Update(cat);
+            RefreshGrid();
+            ClearFields();
+            btnSave.Enabled = false;
         }
 
         private bool _isPopulatingFields = false;
@@ -168,21 +171,21 @@ namespace CatShelterManager
             if (string.IsNullOrEmpty(query)) { RefreshGrid(); return; }
 
             dgvCats.DataSource = _catRepo
-                .Find(c => c.Nickname.ToLower().Contains(query)
-                        || (_locationRepo.GetById(c.LocationId)?.Number ?? "").ToLower().Contains(query))
-                .Select(c => new
-                {
-                    c.Id,
-                    Кличка = c.Nickname,
-                    Вік = c.Age,
-                    Здоров_я = c.HealthStatus,
-                    Локація = _locationRepo.GetById(c.LocationId)?.Number ?? "—"
-                })
-                .ToList();
+         .Find(c => c.Nickname.ToLower().Contains(query)
+                 || (_locationRepo.GetById(c.LocationId)?.Number ?? "").ToLower().Contains(query))
+         .ToList();
 
-            if (dgvCats.Columns.Contains("Id"))
-                dgvCats.Columns["Id"].Visible = false;
+            foreach (DataGridViewColumn col in dgvCats.Columns)
+            {
+                col.Visible = false;
+            }
+
+            dgvCats.Columns["Nickname"].Visible = true;
+            dgvCats.Columns["Age"].Visible = true;
+            dgvCats.Columns["HealthStatus"].Visible = true;
+            dgvCats.Columns["LocationId"].Visible = true;
         }
+
 
         private void btnClearSearch_Click(object sender, EventArgs e)
         {
