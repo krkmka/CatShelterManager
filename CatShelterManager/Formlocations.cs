@@ -18,6 +18,20 @@ namespace CatShelterManager
 
             InitializeComponent();
             RefreshGrid();
+
+            txtNumber.TextChanged += Field_ValueChanged;
+            txtDesc.TextChanged += Field_ValueChanged;
+
+            btnSave.Enabled = false;
+        }
+
+        private bool _isPopulatingFields = false;
+        private void Field_ValueChanged(object? sender, EventArgs e)
+        {
+            if (!_isPopulatingFields && dgvLocations.CurrentRow != null)
+            {
+                btnSave.Enabled = true;
+            }
         }
 
         private void RefreshGrid()
@@ -61,7 +75,7 @@ namespace CatShelterManager
             }
         }
 
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             if (dgvLocations.SelectedRows.Count == 0) return;
 
@@ -75,6 +89,8 @@ namespace CatShelterManager
                 _locationRepo.Update(location);
                 RefreshGrid();
                 ClearFields();
+
+                btnSave.Enabled = false;
             }
             catch (ArgumentException ex)
             {
@@ -133,16 +149,25 @@ namespace CatShelterManager
                 : null;
 
             if (location == null) return;
+            _isPopulatingFields = true;
 
             txtNumber.Text = location.Number;
             txtDesc.Text = location.Description;
+
+            _isPopulatingFields = false; 
+            btnSave.Enabled = false;     
         }
 
         private void ClearFields()
         {
+            _isPopulatingFields = true;
+
             txtNumber.Text = string.Empty;
             txtDesc.Text = string.Empty;
             dgvLocations.ClearSelection();
+
+            _isPopulatingFields = false; 
+            btnSave.Enabled = false;     
         }
 
         private void dgvLocations_CellContentClick(object sender, DataGridViewCellEventArgs e)

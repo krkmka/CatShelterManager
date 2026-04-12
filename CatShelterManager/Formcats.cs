@@ -19,6 +19,11 @@ namespace CatShelterManager
             InitializeComponent();
             SetupCombos();
             RefreshGrid();
+
+            txtName.TextChanged += Field_ValueChanged;
+            numAge.ValueChanged += Field_ValueChanged;
+            cmbHealth.SelectedIndexChanged += Field_ValueChanged;
+            cmbLocation.SelectedIndexChanged += Field_ValueChanged;
         }
 
         private void SetupCombos()
@@ -100,7 +105,7 @@ namespace CatShelterManager
         }
 
 
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void btnSave_Click(object sender, EventArgs e)
         {
             if (dgvCats.SelectedRows.Count == 0) return;
             if (cmbLocation.SelectedItem is not Location newLoc)
@@ -121,11 +126,23 @@ namespace CatShelterManager
                 _catRepo.Update(cat);
                 RefreshGrid();
                 ClearFields();
+
+                btnSave.Enabled = false; 
             }
             catch (ArgumentException ex)
             {
                 MessageBox.Show(ex.Message, "Невірні дані",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private bool _isPopulatingFields = false;
+
+        private void Field_ValueChanged(object? sender, EventArgs e)
+        {
+            if (!_isPopulatingFields && dgvCats.CurrentRow != null)
+            {
+                btnSave.Enabled = true;
             }
         }
 
@@ -174,18 +191,20 @@ namespace CatShelterManager
         }
 
         private void dgvCats_SelectionChanged(object sender, EventArgs e)
-{
-    var cat = dgvCats.SelectedRows.Count > 0
-        ? dgvCats.SelectedRows[0].DataBoundItem as Cat
-        : null;
+        {
+            var cat = dgvCats.SelectedRows.Count > 0 ? dgvCats.SelectedRows[0].DataBoundItem as Cat : null;
 
-    if (cat == null) return;
+            if (cat == null) return;
+            _isPopulatingFields = true;
 
-    txtName.Text             = cat.Nickname;
-    numAge.Value             = cat.Age;
-    cmbHealth.SelectedItem   = cat.HealthStatus;
-    cmbLocation.SelectedItem = _locationRepo.GetById(cat.LocationId);
-}
+            txtName.Text = cat.Nickname;
+            numAge.Value = cat.Age;
+            cmbHealth.SelectedItem = cat.HealthStatus;
+            cmbLocation.SelectedItem = _locationRepo.GetById(cat.LocationId);
+
+            _isPopulatingFields = false; 
+            btnSave.Enabled = false;     
+        }
 
         private void ClearFields()
         {
@@ -194,6 +213,9 @@ namespace CatShelterManager
             cmbHealth.SelectedIndex = 0;
             cmbLocation.SelectedIndex = -1;
             dgvCats.ClearSelection();
+
+            _isPopulatingFields = false; 
+            btnSave.Enabled = false;     
         }
     }
 }

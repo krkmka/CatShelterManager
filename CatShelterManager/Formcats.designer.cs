@@ -26,7 +26,7 @@
         private System.Windows.Forms.ComboBox cmbLocation;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnDelete;
 
         private void InitializeComponent()
@@ -47,7 +47,7 @@
             cmbLocation = new System.Windows.Forms.ComboBox();
             pnlButtons = new System.Windows.Forms.Panel();
             btnAdd = new System.Windows.Forms.Button();
-            btnEdit = new System.Windows.Forms.Button();
+            btnSave = new System.Windows.Forms.Button();
             btnDelete = new System.Windows.Forms.Button();
 
             ((System.ComponentModel.ISupportInitialize)dgvCats).BeginInit();
@@ -184,19 +184,26 @@
             btnAdd.TabIndex = 0;
             btnAdd.Click += btnAdd_Click;
 
-            btnEdit.Text = "Редагувати";
-            btnEdit.Location = new System.Drawing.Point(128, 6);
-            btnEdit.Size = new System.Drawing.Size(120, 34);
-            btnEdit.BackColor = System.Drawing.Color.FromArgb(33, 150, 243);
-            btnEdit.ForeColor = System.Drawing.Color.White;
-            btnEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnEdit.FlatAppearance.BorderSize = 0;
-            btnEdit.Name = "btnEdit";
-            btnEdit.TabIndex = 1;
-            btnEdit.Click += btnEdit_Click;
+            btnSave.Text = "Зберегти зміни";
+            btnSave.Enabled = false;
+            btnSave.Location = new System.Drawing.Point(128, 6);
+            btnSave.Size = new System.Drawing.Size(130, 34);
+            btnSave.BackColor = System.Drawing.Color.FromArgb(33, 150, 243);
+            btnSave.ForeColor = System.Drawing.Color.White;
+            btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Name = "btnSave";
+            btnSave.TabIndex = 1;
+            btnSave.Enabled = false;
+            btnSave.Click += btnSave_Click;
+
+            txtName.TextChanged += Field_ValueChanged;
+            numAge.ValueChanged += Field_ValueChanged;
+            cmbHealth.SelectedIndexChanged += Field_ValueChanged;
+            cmbLocation.SelectedIndexChanged += Field_ValueChanged;
 
             btnDelete.Text = "Видалити";
-            btnDelete.Location = new System.Drawing.Point(256, 6);
+            btnDelete.Location = new System.Drawing.Point(266, 6);
             btnDelete.Size = new System.Drawing.Size(120, 34);
             btnDelete.BackColor = System.Drawing.Color.FromArgb(244, 67, 54);
             btnDelete.ForeColor = System.Drawing.Color.White;
@@ -207,7 +214,7 @@
             btnDelete.Click += btnDelete_Click;
 
             pnlButtons.Controls.AddRange(new System.Windows.Forms.Control[]
-                { btnAdd, btnEdit, btnDelete });
+                { btnAdd, btnSave, btnDelete });
 
             // FormCats
             this.Text = "Керування котами";

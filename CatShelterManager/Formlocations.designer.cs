@@ -25,7 +25,7 @@
         private System.Windows.Forms.TextBox txtDesc;
         private System.Windows.Forms.Panel pnlButtons;
         private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnDelete;
 
         private void InitializeComponent()
@@ -45,7 +45,7 @@
             txtDesc = new System.Windows.Forms.TextBox();
             pnlButtons = new System.Windows.Forms.Panel();
             btnAdd = new System.Windows.Forms.Button();
-            btnEdit = new System.Windows.Forms.Button();
+            btnSave = new System.Windows.Forms.Button();
             btnDelete = new System.Windows.Forms.Button();
 
             ((System.ComponentModel.ISupportInitialize)dgvLocations).BeginInit();
@@ -171,16 +171,17 @@
             btnAdd.TabIndex = 0;
             btnAdd.Click += btnAdd_Click;
 
-            btnEdit.Text = "Редагувати";
-            btnEdit.Location = new System.Drawing.Point(128, 6);
-            btnEdit.Size = new System.Drawing.Size(120, 34);
-            btnEdit.BackColor = System.Drawing.Color.FromArgb(156, 39, 176);
-            btnEdit.ForeColor = System.Drawing.Color.White;
-            btnEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            btnEdit.FlatAppearance.BorderSize = 0;
-            btnEdit.Name = "btnEdit";
-            btnEdit.TabIndex = 1;
-            btnEdit.Click += btnEdit_Click;
+            btnSave.Text = "Зберегти зміни";
+            btnSave.Enabled = false;
+            btnSave.Location = new System.Drawing.Point(128, 6);
+            btnSave.Size = new System.Drawing.Size(120, 34);
+            btnSave.BackColor = System.Drawing.Color.FromArgb(156, 39, 176);
+            btnSave.ForeColor = System.Drawing.Color.White;
+            btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Name = "btnSave";
+            btnSave.TabIndex = 1;
+            btnSave.Click += btnSave_Click;
 
             btnDelete.Text = "Видалити";
             btnDelete.Location = new System.Drawing.Point(256, 6);
@@ -194,7 +195,7 @@
             btnDelete.Click += btnDelete_Click;
 
             pnlButtons.Controls.AddRange(new System.Windows.Forms.Control[]
-                { btnAdd, btnEdit, btnDelete });
+                { btnAdd, btnSave, btnDelete });
 
             this.Text = "Керування локаціями";
             this.ClientSize = new System.Drawing.Size(884, 474);

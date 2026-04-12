@@ -12,6 +12,8 @@ namespace CatShelterManager.Models
         [JsonConstructor]
         public Location(int id, string number, string description)
         {
+            if (string.IsNullOrWhiteSpace(number))
+                throw new ArgumentException("Номер місця не може бути порожнім.", nameof(number));
             Id = id;
             Number = number;
             Description = description;
