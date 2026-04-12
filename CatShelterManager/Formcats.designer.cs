@@ -75,28 +75,28 @@
             dgvCats.SelectionChanged += dgvCats_SelectionChanged;
             dgvCats.CellFormatting += dgvCats_CellFormatting;
 
-            // grpSearch
+            // grpSearch — висота 58 щоб заголовок не накривав txtSearch
             grpSearch.Location = new System.Drawing.Point(12, 272);
-            grpSearch.Size = new System.Drawing.Size(860, 52);
+            grpSearch.Size = new System.Drawing.Size(860, 58);
             grpSearch.Text = "Пошук";
             grpSearch.Name = "grpSearch";
             grpSearch.TabIndex = 1;
 
-            txtSearch.Location = new System.Drawing.Point(10, 18);
-            txtSearch.Size = new System.Drawing.Size(630, 24);
+            txtSearch.Location = new System.Drawing.Point(10, 22);
+            txtSearch.Size = new System.Drawing.Size(630, 26);
             txtSearch.PlaceholderText = "Кличка або локація...";
             txtSearch.Name = "txtSearch";
             txtSearch.TabIndex = 0;
 
             btnSearch.Text = "Знайти";
-            btnSearch.Location = new System.Drawing.Point(648, 16);
+            btnSearch.Location = new System.Drawing.Point(648, 20);
             btnSearch.Size = new System.Drawing.Size(90, 28);
             btnSearch.Name = "btnSearch";
             btnSearch.TabIndex = 1;
             btnSearch.Click += btnSearch_Click;
 
             btnClearSearch.Text = "Скинути";
-            btnClearSearch.Location = new System.Drawing.Point(746, 16);
+            btnClearSearch.Location = new System.Drawing.Point(746, 20);
             btnClearSearch.Size = new System.Drawing.Size(100, 28);
             btnClearSearch.Name = "btnClearSearch";
             btnClearSearch.TabIndex = 2;
@@ -105,57 +105,61 @@
             grpSearch.Controls.AddRange(new System.Windows.Forms.Control[]
                 { txtSearch, btnSearch, btnClearSearch });
 
-            // grpFields
-            grpFields.Location = new System.Drawing.Point(12, 334);
-            grpFields.Size = new System.Drawing.Size(860, 60);
+            // grpFields — висота 66
+            grpFields.Location = new System.Drawing.Point(12, 340);
+            grpFields.Size = new System.Drawing.Size(860, 66);
             grpFields.Text = "Дані кота";
             grpFields.Name = "grpFields";
             grpFields.TabIndex = 2;
 
+            // lblName — "Кличка:" ширина 68
             lblName.Text = "Кличка:";
-            lblName.Location = new System.Drawing.Point(10, 24);
-            lblName.Size = new System.Drawing.Size(60, 22);
+            lblName.Location = new System.Drawing.Point(10, 28);
+            lblName.Size = new System.Drawing.Size(68, 22);
             lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             lblName.Name = "lblName";
 
-            txtName.Location = new System.Drawing.Point(74, 22);
-            txtName.Size = new System.Drawing.Size(150, 24);
+            txtName.Location = new System.Drawing.Point(82, 26);
+            txtName.Size = new System.Drawing.Size(150, 26);
             txtName.Name = "txtName";
             txtName.TabIndex = 0;
 
+            // lblAge — "Вік:" ширина 40
             lblAge.Text = "Вік:";
-            lblAge.Location = new System.Drawing.Point(234, 24);
-            lblAge.Size = new System.Drawing.Size(36, 22);
+            lblAge.Location = new System.Drawing.Point(244, 28);
+            lblAge.Size = new System.Drawing.Size(40, 22);
             lblAge.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             lblAge.Name = "lblAge";
 
-            numAge.Location = new System.Drawing.Point(274, 22);
-            numAge.Size = new System.Drawing.Size(60, 24);
+            numAge.Location = new System.Drawing.Point(288, 26);
+            numAge.Size = new System.Drawing.Size(60, 26);
             numAge.Minimum = 0;
             numAge.Maximum = 30;
             numAge.Name = "numAge";
             numAge.TabIndex = 1;
 
+            // lblHealth — "Здоров'я:" ширина 82
             lblHealth.Text = "Здоров'я:";
-            lblHealth.Location = new System.Drawing.Point(344, 24);
-            lblHealth.Size = new System.Drawing.Size(72, 22);
+            lblHealth.Location = new System.Drawing.Point(360, 28);
+            lblHealth.Size = new System.Drawing.Size(82, 22);
             lblHealth.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             lblHealth.Name = "lblHealth";
 
-            cmbHealth.Location = new System.Drawing.Point(420, 22);
-            cmbHealth.Size = new System.Drawing.Size(170, 24);
+            cmbHealth.Location = new System.Drawing.Point(446, 26);
+            cmbHealth.Size = new System.Drawing.Size(160, 26);
             cmbHealth.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cmbHealth.Name = "cmbHealth";
             cmbHealth.TabIndex = 2;
 
+            // lblLocation — "Локація:" ширина 72
             lblLocation.Text = "Локація:";
-            lblLocation.Location = new System.Drawing.Point(600, 24);
-            lblLocation.Size = new System.Drawing.Size(64, 22);
+            lblLocation.Location = new System.Drawing.Point(618, 28);
+            lblLocation.Size = new System.Drawing.Size(72, 22);
             lblLocation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             lblLocation.Name = "lblLocation";
 
-            cmbLocation.Location = new System.Drawing.Point(668, 22);
-            cmbLocation.Size = new System.Drawing.Size(178, 24);
+            cmbLocation.Location = new System.Drawing.Point(694, 26);
+            cmbLocation.Size = new System.Drawing.Size(152, 26);
             cmbLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             cmbLocation.Name = "cmbLocation";
             cmbLocation.TabIndex = 3;
@@ -164,7 +168,7 @@
                 { lblName, txtName, lblAge, numAge, lblHealth, cmbHealth, lblLocation, cmbLocation });
 
             // pnlButtons
-            pnlButtons.Location = new System.Drawing.Point(12, 406);
+            pnlButtons.Location = new System.Drawing.Point(12, 418);
             pnlButtons.Size = new System.Drawing.Size(860, 44);
             pnlButtons.Name = "pnlButtons";
             pnlButtons.TabIndex = 3;
@@ -207,8 +211,8 @@
 
             // FormCats
             this.Text = "Керування котами";
-            this.ClientSize = new System.Drawing.Size(884, 462);
-            this.MinimumSize = new System.Drawing.Size(900, 510);
+            this.ClientSize = new System.Drawing.Size(884, 474);
+            this.MinimumSize = new System.Drawing.Size(900, 520);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.BackColor = System.Drawing.Color.White;
             this.Font = new System.Drawing.Font("Segoe UI", 9.5F);

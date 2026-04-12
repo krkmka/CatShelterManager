@@ -33,7 +33,7 @@ namespace CatShelterManager
             var location = dgvLocations.Rows[e.RowIndex].DataBoundItem as Location;
             if (location == null) return;
 
-            e.Value = _catRepo.Find(c => c.LocationId == location.Id).Count;
+            e.Value = _catRepo.Find(c => c.LocationId == location.Id).Count.ToString();
             e.FormattingApplied = true;
         }
 

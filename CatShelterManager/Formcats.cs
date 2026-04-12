@@ -37,11 +37,9 @@ namespace CatShelterManager
 
             if (!dgvCats.Columns.Contains("Nickname")) return;
 
-            // Приховати всі зайві колонки що генеруються з Cat
             foreach (DataGridViewColumn col in dgvCats.Columns)
                 col.Visible = false;
 
-            // Показати тільки потрібні
             dgvCats.Columns["Nickname"].Visible = true;
             dgvCats.Columns["Age"].Visible = true;
             dgvCats.Columns["HealthStatus"].Visible = true;
