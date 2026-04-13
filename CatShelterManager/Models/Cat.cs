@@ -28,18 +28,11 @@ namespace CatShelterManager.Models
 
         public Cat(int id, string nickname, int age, HealthStatus status, Location location)
         {
-            if (string.IsNullOrWhiteSpace(nickname))
-                throw new ArgumentException("Кличка не може бути порожньою.", nameof(nickname));
-            if (age < 0)
-                throw new ArgumentOutOfRangeException(nameof(age), "Вік не може бути від'ємним.");
-            if (location == null)
-                throw new ArgumentNullException(nameof(location));
-
             Id = id;
             Nickname = nickname;
             Age = age;
             HealthStatus = status;
-            LocationId = location.Id;
+            LocationId = location?.Id ?? 0;
         }
 
         public void UpdateCatDetails(string nickname, int age, HealthStatus status)
